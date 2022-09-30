@@ -18,8 +18,8 @@ class Memo {
     memo = db[colMemo];
   }
 
-  Map toMap() {
-    var map = <String, dynamic>{};
+  Map<String, Object?> toMap() {
+    var map = <String, Object?>{};
     if (id != null) {
       map[colId] = id;
     }
