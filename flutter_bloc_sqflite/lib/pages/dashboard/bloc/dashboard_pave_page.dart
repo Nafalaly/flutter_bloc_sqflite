@@ -6,37 +6,64 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-      backgroundColor: Colors.blueGrey,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const FormPage()),
+        child: BlocListener<DashboardPageBloc, DashboardPageState>(
+      listenWhen: (previous, current) =>
+          previous.navigateToForm != current.navigateToForm,
+      listener: (context, state) {
+        if (state.navigateToForm is NavigatorTriggerStatusTriggered) {
+          navigatorHandler(
+              context: context,
+              route: (state.navigateToForm as NavigatorTriggerStatusTriggered)
+                  .route);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.blueGrey,
+        floatingActionButton:
+            BlocBuilder<DashboardPageBloc, DashboardPageState>(
+                builder: (context, state) {
+          return FloatingActionButton(
+            onPressed: () => context
+                .read<DashboardPageBloc>()
+                .add(DashboardPageEventNavigateToFormPageCreate()),
+            child: const Icon(Icons.add),
           );
-        },
-        child: const Icon(Icons.add),
-      ),
-      appBar: AppBar(
-        title: const Text('BLOC & Sqflite'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {},
-          )
-        ],
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(10),
-        child: ListView(
-          children: [
-            dataWidget(),
-            dataWidget(),
-            dataWidget(),
+        }),
+        appBar: AppBar(
+          title: const Text('BLOC & Sqflite'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {},
+            )
           ],
+        ),
+        body: Container(
+          padding: const EdgeInsets.all(10),
+          child: ListView(
+            children: [
+              dataWidget(),
+              dataWidget(),
+              dataWidget(),
+            ],
+          ),
         ),
       ),
     ));
+  }
+
+  void navigatorHandler({
+    required BuildContext context,
+    required String route,
+  }) {
+    late MaterialPageRoute routeTo;
+    if (route == 'form_create') {
+      routeTo = MaterialPageRoute(builder: (context) => const FormPage());
+    }
+    Navigator.push(
+      context,
+      routeTo,
+    );
   }
 
   Widget dataWidget() {

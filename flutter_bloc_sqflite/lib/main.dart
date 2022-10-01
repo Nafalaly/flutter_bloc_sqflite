@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bloc_sqflite/pages/dashboard/bloc/dashboard_page_bloc.dart';
+import 'package:flutter_bloc_sqflite/pages/form/bloc/form_page_bloc.dart';
 import 'package:flutter_bloc_sqflite/pages/pages.dart';
 import 'package:flutter_bloc_sqflite/services/connectivity_controller/connectivity_state.dart';
 import 'package:flutter_bloc_sqflite/services/services.dart';
@@ -41,26 +42,18 @@ class MyApp extends StatelessWidget {
             create: (context) =>
                 ConnectivityCubit(internetAdaptor: connection)),
         BlocProvider(create: (context) => MemoDbBloc()),
-        // BlocProvider(create: (context) => EmployeDataCubit()),
-        // BlocProvider(create: (context) => CompanyInformationCubit()),
       ],
       child: MaterialApp(
         initialRoute: '/Dashboard',
         routes: {
-          // '/SplashScreen': (context) => const SplashScreen(),
           '/Dashboard': (context) => BlocProvider(
                 create: (context) => DashboardPageBloc(),
                 child: const DashboardPage(),
               ),
-          // '/AttendanceDashboard': (context) => const AttendanceMainMenu(),
-          // '/AttendanceSubmitPage': (context) => const AttendanceSubmitPage(),
-          // '/ProfilePage': (context) => const ProfilePage(),
-          // '/LoginPage': (context) => BlocProvider(
-          //       create: (context) => LoginPageBloc(
-          //           connection: context.read<ConnectivityCubit>(),
-          //           accountCubit: context.read<UserAccountCubit>()),
-          //       child: const LoginPage(),
-          //     ),
+          '/FormPage': (context) => BlocProvider(
+                create: (context) => FormPageBloc(),
+                child: const FormPage(),
+              ),
         },
         theme: ThemeData(primarySwatch: Colors.blue),
         builder: (context, child) {
