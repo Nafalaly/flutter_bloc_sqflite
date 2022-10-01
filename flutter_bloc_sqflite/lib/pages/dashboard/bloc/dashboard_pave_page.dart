@@ -32,21 +32,30 @@ class DashboardPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('BLOC & Sqflite'),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () {},
+            BlocBuilder<DashboardPageBloc, DashboardPageState>(
+              builder: (context, state) {
+                return IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () => context
+                      .read<DashboardPageBloc>()
+                      .add(DashboardPageEventFetchDataFromDB()),
+                );
+              },
             )
           ],
         ),
-        body: Container(
-          padding: const EdgeInsets.all(10),
-          child: ListView(
-            children: [
-              dataWidget(),
-              dataWidget(),
-              dataWidget(),
-            ],
-          ),
+        body: BlocBuilder<DashboardPageBloc, DashboardPageState>(
+          buildWhen: (previous, current) =>
+              previous.memoData != current.memoData,
+          builder: (context, state) {
+            return Container(
+              padding: const EdgeInsets.all(10),
+              child: ListView(
+                children:
+                    state.memoData.map((e) => dataWidget(data: e)).toList(),
+              ),
+            );
+          },
         ),
       ),
     ));
@@ -58,7 +67,12 @@ class DashboardPage extends StatelessWidget {
   }) {
     late MaterialPageRoute routeTo;
     if (route == 'form_create') {
-      routeTo = MaterialPageRoute(builder: (context) => const FormPage());
+      routeTo = MaterialPageRoute(
+          builder: (context) => BlocProvider(
+                create: (context) =>
+                    FormPageBloc(dbBloc: context.read<MemoDbBloc>()),
+                child: const FormPage(),
+              ));
     }
     Navigator.push(
       context,
@@ -66,16 +80,16 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget dataWidget() {
+  Widget dataWidget({required Memo data}) {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       decoration: const BoxDecoration(
         color: Colors.white,
       ),
-      child: const ListTile(
-        leading: Icon(Icons.storage_rounded),
-        title: Text('Dummy Data'),
-        trailing: Icon(Icons.arrow_circle_right_rounded),
+      child: ListTile(
+        leading: const Icon(Icons.storage_rounded),
+        title: Text(data.memo),
+        trailing: const Icon(Icons.arrow_circle_right_rounded),
       ),
     );
   }

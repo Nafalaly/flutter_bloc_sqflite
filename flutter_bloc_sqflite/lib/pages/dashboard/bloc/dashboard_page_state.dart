@@ -5,14 +5,21 @@ part of 'dashboard_page_bloc.dart';
 @immutable
 class DashboardPageState {
   late NavigatorTriggerStatus navigateToForm;
+  late DataState dataState;
+  late List<Memo> memoData;
+  DashboardPageState(
+      {this.navigateToForm = const NavigatorTriggerStatusIdle(),
+      this.dataState = const DataStateInitial(),
+      this.memoData = const []});
 
-  DashboardPageState({
-    this.navigateToForm = const NavigatorTriggerStatusIdle(),
-  });
-
-  DashboardPageState copyWith({NavigatorTriggerStatus? navigateToForm}) {
+  DashboardPageState copyWith(
+      {NavigatorTriggerStatus? navigateToForm,
+      DataState? dataState,
+      List<Memo>? memoData}) {
     return DashboardPageState(
-        navigateToForm: navigateToForm ?? this.navigateToForm);
+        navigateToForm: navigateToForm ?? this.navigateToForm,
+        dataState: dataState ?? this.dataState,
+        memoData: memoData ?? this.memoData);
   }
 }
 
@@ -27,4 +34,24 @@ class NavigatorTriggerStatusIdle extends NavigatorTriggerStatus {
 class NavigatorTriggerStatusTriggered extends NavigatorTriggerStatus {
   final String route;
   NavigatorTriggerStatusTriggered({required this.route});
+}
+
+abstract class DataState {
+  const DataState();
+}
+
+class DataStateInitial extends DataState {
+  const DataStateInitial();
+}
+
+class DataStateLoading extends DataState {
+  const DataStateLoading();
+}
+
+class DataStateLoaded extends DataState {
+  const DataStateLoaded();
+}
+
+class DataStateFailure extends DataState {
+  const DataStateFailure();
 }

@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bloc_sqflite/pages/dashboard/bloc/dashboard_page_bloc.dart';
-import 'package:flutter_bloc_sqflite/pages/form/bloc/form_page_bloc.dart';
 import 'package:flutter_bloc_sqflite/pages/pages.dart';
-import 'package:flutter_bloc_sqflite/services/connectivity_controller/connectivity_state.dart';
 import 'package:flutter_bloc_sqflite/services/services.dart';
 import 'package:flutter_bloc_sqflite/services/sqflite/memo/bloc/memo_db_bloc.dart';
 
@@ -38,21 +36,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-            create: (context) =>
-                ConnectivityCubit(internetAdaptor: connection)),
         BlocProvider(create: (context) => MemoDbBloc()),
       ],
       child: MaterialApp(
         initialRoute: '/Dashboard',
         routes: {
           '/Dashboard': (context) => BlocProvider(
-                create: (context) => DashboardPageBloc(),
+                create: (context) =>
+                    DashboardPageBloc(dbBloc: context.read<MemoDbBloc>()),
                 child: const DashboardPage(),
-              ),
-          '/FormPage': (context) => BlocProvider(
-                create: (context) => FormPageBloc(),
-                child: const FormPage(),
               ),
         },
         theme: ThemeData(primarySwatch: Colors.blue),

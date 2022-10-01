@@ -22,7 +22,25 @@ class MemoDbBloc extends Bloc<MemoDbEvent, MemoDbState> {
   Future<void> mapEvent(MemoDbEvent event, Emitter<MemoDbState> emit) async {
     if (event is MemoDbEventInitialDB) {
       _initial();
+      emit(MemoDbMainState());
+    } else if (event is MemoDbEventFetchData) {
+      add(MemoDbEventFetchDataOnProgress());
+      print('DB : fetch..');
+      _fetchData();
+      add(MemoDbEventFetchDataComplete(data: await _fetchData()));
+    } else if (event is MemoDbEventFetchDataOnProgress) {
+      print('DB : loading..');
+      emit(
+          (state as MemoDbMainState).copyWith(dbState: const DBStateLoading()));
+    } else if (event is MemoDbEventFetchDataComplete) {
+      print('DB : complete..');
+      emit((state as MemoDbMainState)
+          .copyWith(dbState: const DBStateLoaded(), currentMemo: event.data));
     }
+  }
+
+  Future<List<Memo>> _fetchData() async {
+    return await databaseController.getDataList();
   }
 
   void _initial() {
