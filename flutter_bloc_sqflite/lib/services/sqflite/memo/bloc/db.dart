@@ -53,7 +53,7 @@ class MemoDbController {
   //Insert Op
   Future<int> addData(Memo newData) async {
     Database db = await database;
-    var result = await db.insert(Memo.colMemo, newData.toMap());
+    var result = await db.insert(Memo.tableName, newData.toMap());
     return result;
   }
 
@@ -61,7 +61,7 @@ class MemoDbController {
   Future<int> delete(String id) async {
     var db = await database;
     int result = await db
-        .rawDelete('DELETE FROM ${Memo.colMemo} WHERE ${Memo.colId}="$id"');
+        .rawDelete('DELETE FROM ${Memo.tableName} WHERE ${Memo.colId}="$id"');
     return result;
   }
 

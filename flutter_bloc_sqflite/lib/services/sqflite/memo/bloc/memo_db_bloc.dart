@@ -35,12 +35,29 @@ class MemoDbBloc extends Bloc<MemoDbEvent, MemoDbState> {
     } else if (event is MemoDbEventFetchDataComplete) {
       print('DB : complete..');
       emit((state as MemoDbMainState)
-          .copyWith(dbState: const DBStateLoaded(), currentMemo: event.data));
+          .copyWith(dbState: const DBStateDone(), currentMemo: event.data));
+    } else if (event is MemoDbEventCreateData) {
+      add(MemoDbEventEditingDataOnProgress());
+      print('DB : creating new record..');
+      await _createData(newData: event.newMemo);
+      add(MemoDbEventEditingDataComplete());
+    } else if (event is MemoDbEventEditingDataComplete) {
+      print('DB : creating complete..');
+      emit((state as MemoDbMainState)
+          .copyWith(dbStateCreate: const DBStateDone()));
+    } else if (event is MemoDbEventEditingDataOnProgress) {
+      print('DB : creating in progres...');
+      emit((state as MemoDbMainState)
+          .copyWith(dbStateCreate: const DBStateLoading()));
     }
   }
 
   Future<List<Memo>> _fetchData() async {
     return await databaseController.getDataList();
+  }
+
+  Future<int> _createData({required Memo newData}) async {
+    return await databaseController.addData(newData);
   }
 
   void _initial() {

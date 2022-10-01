@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 part of '../../pages.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -64,20 +66,26 @@ class DashboardPage extends StatelessWidget {
   void navigatorHandler({
     required BuildContext context,
     required String route,
-  }) {
+  }) async {
     late MaterialPageRoute routeTo;
     if (route == 'form_create') {
       routeTo = MaterialPageRoute(
-          builder: (context) => BlocProvider(
-                create: (context) =>
-                    FormPageBloc(dbBloc: context.read<MemoDbBloc>()),
+          builder: (_) => BlocProvider(
+                create: (_) => FormPageBloc(dbBloc: context.read<MemoDbBloc>()),
                 child: const FormPage(),
               ));
     }
-    Navigator.push(
+    bool result = false;
+    result = await Navigator.push(
       context,
       routeTo,
     );
+
+    if (result) {
+      context
+          .read<DashboardPageBloc>()
+          .add(DashboardPageEventOnFormCreateComplete());
+    }
   }
 
   Widget dataWidget({required Memo data}) {

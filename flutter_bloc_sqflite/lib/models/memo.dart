@@ -9,9 +9,7 @@ class Memo {
   String? id;
   late String memo;
 
-  Memo.addnewData({required String memo}) {
-    this.memo;
-  }
+  Memo.addnewData({required this.memo});
 
   Memo.fromDatabase(Map<String, dynamic> db) {
     id = db[colId];

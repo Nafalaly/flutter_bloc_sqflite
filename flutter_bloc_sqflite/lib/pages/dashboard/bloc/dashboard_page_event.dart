@@ -15,6 +15,8 @@ class DashboardPageEventFetchDataFromDB extends DashboardPageEvent {}
 
 class DashboardPageEventDBInProgress extends DashboardPageEvent {}
 
+class DashboardPageEventOnFormCreateComplete extends DashboardPageEvent {}
+
 class DashboardPageEventFetchDataFromDBComplete extends DashboardPageEvent {
   final List<Memo> data;
   const DashboardPageEventFetchDataFromDBComplete({required this.data});
