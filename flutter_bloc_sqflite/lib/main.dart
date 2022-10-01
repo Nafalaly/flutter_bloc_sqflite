@@ -8,6 +8,7 @@ import 'package:flutter_bloc_sqflite/pages/dashboard/bloc/dashboard_page_bloc.da
 import 'package:flutter_bloc_sqflite/pages/pages.dart';
 import 'package:flutter_bloc_sqflite/services/connectivity_controller/connectivity_state.dart';
 import 'package:flutter_bloc_sqflite/services/services.dart';
+import 'package:flutter_bloc_sqflite/services/sqflite/memo/bloc/memo_db_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
             create: (context) =>
                 ConnectivityCubit(internetAdaptor: connection)),
-        // BlocProvider(create: (context) => UserAccountCubit()),
+        BlocProvider(create: (context) => MemoDbBloc()),
         // BlocProvider(create: (context) => EmployeDataCubit()),
         // BlocProvider(create: (context) => CompanyInformationCubit()),
       ],

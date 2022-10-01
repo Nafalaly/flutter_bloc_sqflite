@@ -7,6 +7,16 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
+      backgroundColor: Colors.blueGrey,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const FormPage()),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
       appBar: AppBar(
         title: const Text('BLOC & Sqflite'),
         actions: [
@@ -18,7 +28,28 @@ class DashboardPage extends StatelessWidget {
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
+        child: ListView(
+          children: [
+            dataWidget(),
+            dataWidget(),
+            dataWidget(),
+          ],
+        ),
       ),
     ));
+  }
+
+  Widget dataWidget() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+      ),
+      child: const ListTile(
+        leading: Icon(Icons.storage_rounded),
+        title: Text('Dummy Data'),
+        trailing: Icon(Icons.arrow_circle_right_rounded),
+      ),
+    );
   }
 }

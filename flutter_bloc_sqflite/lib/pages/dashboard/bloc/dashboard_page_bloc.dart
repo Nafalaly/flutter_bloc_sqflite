@@ -12,9 +12,5 @@ class DashboardPageBloc extends Bloc<DashboardPageEvent, DashboardPageState> {
   }
 
   Future<void> mapEvent(
-      DashboardPageEvent event, Emitter<DashboardPageState> emit) async {
-    // if (event is LoginAttempt) {
-
-    // }
-  }
+      DashboardPageEvent event, Emitter<DashboardPageState> emit) async {}
 }
