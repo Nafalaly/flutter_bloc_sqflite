@@ -25,32 +25,26 @@ class MemoDbBloc extends Bloc<MemoDbEvent, MemoDbState> {
       emit(MemoDbMainState());
     } else if (event is MemoDbEventFetchData) {
       add(MemoDbEventFetchDataOnProgress());
-      print('DB : fetch..');
       _fetchData();
       add(MemoDbEventFetchDataComplete(data: await _fetchData()));
     } else if (event is MemoDbEventFetchDataOnProgress) {
-      print('DB : loading..');
       emit(
           (state as MemoDbMainState).copyWith(dbState: const DBStateLoading()));
     } else if (event is MemoDbEventFetchDataComplete) {
-      print('DB : complete..');
       emit((state as MemoDbMainState)
           .copyWith(dbState: const DBStateDone(), currentMemo: event.data));
       emit((state as MemoDbMainState)
           .copyWith(dbState: const DBStateIdle(), currentMemo: event.data));
     } else if (event is MemoDbEventCreateData) {
       add(MemoDbEventEditingDataOnProgress());
-      print('DB : creating new record..');
       await _createData(newData: event.newMemo);
       add(MemoDbEventEditingDataComplete());
     } else if (event is MemoDbEventEditingDataComplete) {
-      print('DB : creating complete..');
       emit((state as MemoDbMainState)
           .copyWith(dbStateCreate: const DBStateDone()));
       emit((state as MemoDbMainState)
           .copyWith(dbStateCreate: const DBStateIdle()));
     } else if (event is MemoDbEventEditingDataOnProgress) {
-      print('DB : creating in progres...');
       emit((state as MemoDbMainState)
           .copyWith(dbStateCreate: const DBStateLoading()));
     } else if (event is MemoDbEventDeleteData) {
@@ -64,7 +58,6 @@ class MemoDbBloc extends Bloc<MemoDbEvent, MemoDbState> {
       emit((state as MemoDbMainState)
           .copyWith(dbStateDelete: const DBStateIdle()));
     } else if (event is MemoDbEventUpdateData) {
-      print('DB BLOC; Updatingg...');
       emit((state as MemoDbMainState)
           .copyWith(dbStateEditing: const DBStateLoading()));
       await _updateData(currentMemo: event.currentUpdateMemo);

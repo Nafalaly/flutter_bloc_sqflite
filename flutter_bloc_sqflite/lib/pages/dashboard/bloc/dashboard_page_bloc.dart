@@ -20,7 +20,6 @@ class DashboardPageBloc extends Bloc<DashboardPageEvent, DashboardPageState> {
         if ((event.dbState is DBStateLoading)) {
           add(DashboardPageEventDBInProgress());
         } else if ((event.dbState is DBStateDone)) {
-          print('DATA LOADED FROM PAGE');
           add(DashboardPageEventFetchDataFromDBComplete(
               data: (event.currentMemo)));
         }
@@ -58,7 +57,6 @@ class DashboardPageBloc extends Bloc<DashboardPageEvent, DashboardPageState> {
   }
 
   void fetchDB() {
-    print('DATA FETCT....');
     dbBloc.add(MemoDbEventFetchData());
   }
 

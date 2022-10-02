@@ -36,8 +36,6 @@ class MemoDbController {
 
   //UPDATE
   Future<int> updateData(Memo newMemo) async {
-    print(
-        'Database trying to update with id ${newMemo.id}, with val ${newMemo.memo}');
     var db = await database;
     var result = await db.update(Memo.tableName, newMemo.toMap(),
         where: '${Memo.colId}=?', whereArgs: [newMemo.id]);

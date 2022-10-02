@@ -20,7 +20,6 @@ class FormPageEditMode extends FormPageState {
     super.dbBloc;
     super.memoInformation = currentMemo.memo;
     initialState = true;
-    print('Current memo to update has id ${currentMemo.id}');
   }
 
   FormPageEditMode(

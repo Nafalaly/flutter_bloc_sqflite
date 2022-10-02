@@ -5,7 +5,7 @@ part of 'form_page_bloc.dart';
 class FormPage extends StatelessWidget {
   FormPage({Key? key}) : super(key: key);
   // ignore: prefer_final_fields
-  TextEditingController _textEditingController = new TextEditingController();
+  TextEditingController _textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,6 @@ class FormPage extends StatelessWidget {
       listenWhen: (previous, current) =>
           previous.actionFormState != current.actionFormState,
       listener: (context, state) {
-        print('LISTENER ACTION FORM COMPLETE ${state.actionFormState}');
         if (state.actionFormState is ActionFormComplete) {
           Navigator.pop(context, true);
         }
@@ -123,7 +122,6 @@ class FormPage extends StatelessWidget {
                     _generateFunction(current: current, previous: previous),
                 listener: (context, state) {
                   if (state is FormPageEditMode) {
-                    print('Listener running?');
                     _setTextFieldToInitialValue(
                         initialValue: (state).currentMemo.memo);
                   }
@@ -147,9 +145,6 @@ class FormPage extends StatelessWidget {
 
   bool _generateFunction(
       {required FormPageState previous, required FormPageState current}) {
-    print('Generating function run');
-    print('previous state$previous');
-    print('current state$current');
     bool result = false;
     if (current is FormPageEditMode) {
       return current.initialState;
