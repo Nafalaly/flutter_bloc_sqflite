@@ -34,6 +34,9 @@ class FormPageBloc extends Bloc<FormPageEvent, FormPageState> {
         } else if (event.dbStateEditing is DBStateDone) {
           print('DATA EDITED FROM FORM');
           add(FormPageEventMemoEditMemoComplete());
+        } else if (event.dbStateDelete is DBStateDone) {
+          print('DATA DELETED FROM FORM');
+          add(FormPageEventMemoEditMemoComplete());
         }
       }
     });
@@ -71,6 +74,7 @@ class FormPageBloc extends Bloc<FormPageEvent, FormPageState> {
       emit((state as FormPageEditMode)
           .copyWith(actionFormState: const ActionFormComplete()));
     } else if (event is FormPageEventDeleteByActionButton) {
+      deleteMemo(currentDelete: event.currentMemo);
     } else if (event is FormPageEventMemoUpdateButtonAction) {
       print(
           'Updating action with id ${(state as FormPageEditMode).currentMemo.id}');
