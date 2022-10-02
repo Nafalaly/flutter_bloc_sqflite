@@ -16,7 +16,10 @@ class DashboardPage extends StatelessWidget {
           navigatorHandler(
               context: context,
               route: (state.navigateToForm as NavigatorTriggerStatusTriggered)
-                  .route);
+                  .route,
+              currentMemo:
+                  (state.navigateToForm as NavigatorTriggerStatusTriggered)
+                      .currentMemo);
         }
       },
       child: Scaffold(
@@ -53,8 +56,9 @@ class DashboardPage extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.all(10),
               child: ListView(
-                children:
-                    state.memoData.map((e) => dataWidget(data: e)).toList(),
+                children: state.memoData
+                    .map((e) => dataWidget(data: e, context: context))
+                    .toList(),
               ),
             );
           },
@@ -63,16 +67,25 @@ class DashboardPage extends StatelessWidget {
     ));
   }
 
-  void navigatorHandler({
-    required BuildContext context,
-    required String route,
-  }) async {
+  void navigatorHandler(
+      {required BuildContext context,
+      required String route,
+      Memo? currentMemo}) async {
     late MaterialPageRoute routeTo;
     if (route == 'form_create') {
       routeTo = MaterialPageRoute(
           builder: (_) => BlocProvider(
                 create: (_) => FormPageBloc(dbBloc: context.read<MemoDbBloc>()),
-                child: const FormPage(),
+                child: FormPage(),
+              ));
+    } else if (route == 'form_edit') {
+      routeTo = MaterialPageRoute(
+          builder: (_) => BlocProvider(
+                create: (_) => FormPageBloc(
+                    dbBloc: context.read<MemoDbBloc>(),
+                    isEditingMode: true,
+                    currentMemo: currentMemo!),
+                child: FormPage(),
               ));
     }
     bool result = false;
@@ -88,7 +101,7 @@ class DashboardPage extends StatelessWidget {
     }
   }
 
-  Widget dataWidget({required Memo data}) {
+  Widget dataWidget({required Memo data, required BuildContext context}) {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       decoration: const BoxDecoration(
@@ -97,6 +110,11 @@ class DashboardPage extends StatelessWidget {
       child: ListTile(
         leading: const Icon(Icons.storage_rounded),
         title: Text(data.memo),
+        onTap: () {
+          context
+              .read<DashboardPageBloc>()
+              .add(DashboardPageEventNavigateToFormEdit(currentMemo: data));
+        },
         trailing: const Icon(Icons.arrow_circle_right_rounded),
       ),
     );

@@ -15,6 +15,10 @@ class DBStateInitial extends DBState {
   const DBStateInitial();
 }
 
+class DBStateIdle extends DBState {
+  const DBStateIdle();
+}
+
 class DBStateLoading extends DBState {
   const DBStateLoading();
 }

@@ -37,6 +37,11 @@ class DashboardPageBloc extends Bloc<DashboardPageEvent, DashboardPageState> {
           navigateToForm:
               NavigatorTriggerStatusTriggered(route: 'form_create')));
       add(DashboardPageEventNavigateToIdle());
+    } else if (event is DashboardPageEventNavigateToFormEdit) {
+      emit((state).copyWith(
+          navigateToForm: NavigatorTriggerStatusTriggered(
+              route: 'form_edit', currentMemo: event.currentMemo)));
+      add(DashboardPageEventNavigateToIdle());
     } else if (event is DashboardPageEventNavigateToIdle) {
       emit(
           (state).copyWith(navigateToForm: const NavigatorTriggerStatusIdle()));

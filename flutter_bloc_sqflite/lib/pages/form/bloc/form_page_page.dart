@@ -1,7 +1,11 @@
+// ignore_for_file: must_be_immutable
+
 part of 'form_page_bloc.dart';
 
 class FormPage extends StatelessWidget {
-  const FormPage({Key? key}) : super(key: key);
+  FormPage({Key? key}) : super(key: key);
+  // ignore: prefer_final_fields
+  TextEditingController _textEditingController = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -9,25 +13,34 @@ class FormPage extends StatelessWidget {
       listenWhen: (previous, current) =>
           previous.actionFormState != current.actionFormState,
       listener: (context, state) {
+        print('LISTENER ACTION FORM COMPLETE ${state.actionFormState}');
         if (state.actionFormState is ActionFormComplete) {
           Navigator.pop(context, true);
         }
       },
-      child: Scaffold(
-        backgroundColor: Colors.blueGrey,
-        appBar: AppBar(
-          title: const Text('Create Data'),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {},
-            )
-          ],
-        ),
-        body: ListView(
-          children: [formWidget(context), footerAction(context)],
-        ),
+      child: BlocBuilder<FormPageBloc, FormPageState>(
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: Colors.blueGrey,
+            appBar: AppBar(
+              title: const Text('Create Data'),
+              centerTitle: true,
+              actions: [
+                (state is FormPageEditMode)
+                    ? IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => context.read<FormPageBloc>().add(
+                            FormPageEventDeleteByActionButton(
+                                currentMemo: state.currentMemo)),
+                      )
+                    : const SizedBox()
+              ],
+            ),
+            body: ListView(
+              children: [formWidget(context), footerAction(context)],
+            ),
+          );
+        },
       ),
     );
   }
@@ -60,9 +73,15 @@ class FormPage extends StatelessWidget {
               width: (DeviceScreen.devWidth / 2) - 20,
               child: ElevatedButton(
                 onPressed: () {
-                  context
-                      .read<FormPageBloc>()
-                      .add(FormPageEventMemoSaveInformation());
+                  if (state is FormPageCreateMode) {
+                    context
+                        .read<FormPageBloc>()
+                        .add(FormPageEventMemoSaveInformation());
+                  } else {
+                    context
+                        .read<FormPageBloc>()
+                        .add(FormPageEventMemoUpdateButtonAction());
+                  }
                 },
                 style: ButtonStyle(
                     elevation: MaterialStateProperty.all(5),
@@ -99,18 +118,49 @@ class FormPage extends StatelessWidget {
           ),
           BlocBuilder<FormPageBloc, FormPageState>(
             builder: (_, state) {
-              return TextField(
-                onChanged: (val) => context.read<FormPageBloc>().add(
-                    FormPageEventMemoInformationChanged(newInformation: val)),
-                textAlignVertical: TextAlignVertical.center,
-                decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'put something in here..'),
+              return BlocListener<FormPageBloc, FormPageState>(
+                listenWhen: (previous, current) =>
+                    _generateFunction(current: current, previous: previous),
+                listener: (context, state) {
+                  if (state is FormPageEditMode) {
+                    print('Listener running?');
+                    _setTextFieldToInitialValue(
+                        initialValue: (state).currentMemo.memo);
+                  }
+                },
+                child: TextField(
+                  controller: _textEditingController,
+                  onChanged: (val) => context.read<FormPageBloc>().add(
+                      FormPageEventMemoInformationChanged(newInformation: val)),
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'put something in here..'),
+                ),
               );
             },
           )
         ],
       ),
     );
+  }
+
+  bool _generateFunction(
+      {required FormPageState previous, required FormPageState current}) {
+    print('Generating function run');
+    print('previous state$previous');
+    print('current state$current');
+    bool result = false;
+    if (current is FormPageEditMode) {
+      return current.initialState;
+    } else {
+      result = false;
+    }
+    return result;
+  }
+
+  void _setTextFieldToInitialValue({required String initialValue}) {
+    _textEditingController = TextEditingController();
+    _textEditingController.text = initialValue;
   }
 }

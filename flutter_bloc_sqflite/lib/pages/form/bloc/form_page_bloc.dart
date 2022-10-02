@@ -14,11 +14,13 @@ part 'form_page_state.dart';
 part 'form_page_page.dart';
 
 class FormPageBloc extends Bloc<FormPageEvent, FormPageState> {
-  FormPageBloc({required this.dbBloc, bool? isEditingMode = false})
+  FormPageBloc(
+      {required this.dbBloc, bool? isEditingMode = false, Memo? currentMemo})
       : super(FormPageInitial()) {
     on(mapEvent);
     if (isEditingMode!) {
-      add(FormPageEventSetToEditingMode());
+      print('Editing mode set');
+      add(FormPageEventSetToEditingMode(currentMemo: currentMemo!));
     } else {
       add(FormPageEventSetToCreateMode());
     }
@@ -29,6 +31,9 @@ class FormPageBloc extends Bloc<FormPageEvent, FormPageState> {
         } else if ((event.dbStateCreate is DBStateDone)) {
           print('DATA CREATED FROM FORM');
           add(FormPageEventMemoCreateMemoComplete());
+        } else if (event.dbStateEditing is DBStateDone) {
+          print('DATA EDITED FROM FORM');
+          add(FormPageEventMemoEditMemoComplete());
         }
       }
     });
@@ -42,27 +47,51 @@ class FormPageBloc extends Bloc<FormPageEvent, FormPageState> {
     if (event is FormPageEventSetToCreateMode) {
       emit(FormPageCreateMode.initial(dbBloc: dbBloc));
     } else if (event is FormPageEventSetToEditingMode) {
-      // emit(FormPageCreateMode.initial(dbBloc: dbBloc));
+      print('Emiting new State Edit');
+      emit(FormPageEditMode.initial(
+          dbBloc: dbBloc, currentMemo: event.currentMemo));
+      emit((state as FormPageEditMode).copyWith(initialState: false));
     } else if (event is FormPageEventMemoInformationChanged) {
+      print('FORM : Memo changed to ${event.newInformation}');
       if (state is FormPageCreateMode) {
-        print('FORM : Memo changed to ${event.newInformation}');
         emit((state as FormPageCreateMode)
             .copyWith(memoInformation: event.newInformation));
       } else {
-        //Edit pending
+        emit((state as FormPageEditMode)
+            .copyWith(memoInformation: event.newInformation));
       }
     } else if (event is FormPageEventMemoSaveInformation) {
-      if (state is FormPageCreateMode) {
-        createNewMemo();
-        emit((state as FormPageCreateMode)
-            .copyWith(actionFormState: const ActionFormInProgress()));
-      } else {
-        //editing save
-      }
+      createNewMemo();
+      emit((state as FormPageCreateMode)
+          .copyWith(actionFormState: const ActionFormInProgress()));
     } else if (event is FormPageEventMemoCreateMemoComplete) {
       emit((state as FormPageCreateMode)
           .copyWith(actionFormState: const ActionFormComplete()));
+    } else if (event is FormPageEventMemoEditMemoComplete) {
+      emit((state as FormPageEditMode)
+          .copyWith(actionFormState: const ActionFormComplete()));
+    } else if (event is FormPageEventDeleteByActionButton) {
+    } else if (event is FormPageEventMemoUpdateButtonAction) {
+      print(
+          'Updating action with id ${(state as FormPageEditMode).currentMemo.id}');
+      add(FormPageEventUpdateMemoInformation(
+          updatedMemo: Memo.addnewDataWtId(
+              memo: state.memoInformation,
+              id: (state as FormPageEditMode).currentMemo.id)));
+    } else if (event is FormPageEventUpdateMemoInformation) {
+      print('sending signla to update id ${event.updatedMemo.id}');
+      updateMemo(currentUpdate: event.updatedMemo);
+      emit((state as FormPageEditMode)
+          .copyWith(actionFormState: const ActionFormInProgress()));
     }
+  }
+
+  void updateMemo({required Memo currentUpdate}) {
+    dbBloc.add(MemoDbEventUpdateData(currentUpdateMemo: currentUpdate));
+  }
+
+  void deleteMemo({required Memo currentDelete}) {
+    dbBloc.add(MemoDbEventDeleteData(currentMemo: currentDelete));
   }
 
   void createNewMemo() {

@@ -8,6 +8,11 @@ abstract class DashboardPageEvent {
 //Event for navigating to other pages
 class DashboardPageEventNavigateToFormPageCreate extends DashboardPageEvent {}
 
+class DashboardPageEventNavigateToFormEdit extends DashboardPageEvent {
+  final Memo currentMemo;
+  const DashboardPageEventNavigateToFormEdit({required this.currentMemo});
+}
+
 class DashboardPageEventNavigateToIdle extends DashboardPageEvent {}
 
 //DB Operation

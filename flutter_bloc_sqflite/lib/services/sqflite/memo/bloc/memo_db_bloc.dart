@@ -36,6 +36,8 @@ class MemoDbBloc extends Bloc<MemoDbEvent, MemoDbState> {
       print('DB : complete..');
       emit((state as MemoDbMainState)
           .copyWith(dbState: const DBStateDone(), currentMemo: event.data));
+      emit((state as MemoDbMainState)
+          .copyWith(dbState: const DBStateIdle(), currentMemo: event.data));
     } else if (event is MemoDbEventCreateData) {
       add(MemoDbEventEditingDataOnProgress());
       print('DB : creating new record..');
@@ -45,15 +47,44 @@ class MemoDbBloc extends Bloc<MemoDbEvent, MemoDbState> {
       print('DB : creating complete..');
       emit((state as MemoDbMainState)
           .copyWith(dbStateCreate: const DBStateDone()));
+      emit((state as MemoDbMainState)
+          .copyWith(dbStateCreate: const DBStateIdle()));
     } else if (event is MemoDbEventEditingDataOnProgress) {
       print('DB : creating in progres...');
       emit((state as MemoDbMainState)
           .copyWith(dbStateCreate: const DBStateLoading()));
+    } else if (event is MemoDbEventDeleteData) {
+      emit((state as MemoDbMainState)
+          .copyWith(dbStateDelete: const DBStateLoading()));
+      await _deleteData(currentMemo: event.currentMemo);
+      add(MemoDbEventDeleteDataComplete());
+    } else if (event is MemoDbEventDeleteDataComplete) {
+      emit((state as MemoDbMainState)
+          .copyWith(dbStateDelete: const DBStateDone()));
+      emit((state as MemoDbMainState)
+          .copyWith(dbStateDelete: const DBStateIdle()));
+    } else if (event is MemoDbEventUpdateData) {
+      print('DB BLOC; Updatingg...');
+      emit((state as MemoDbMainState)
+          .copyWith(dbStateEditing: const DBStateLoading()));
+      await _updateData(currentMemo: event.currentUpdateMemo);
+      emit((state as MemoDbMainState)
+          .copyWith(dbStateEditing: const DBStateDone()));
+      emit((state as MemoDbMainState)
+          .copyWith(dbStateEditing: const DBStateIdle()));
     }
   }
 
   Future<List<Memo>> _fetchData() async {
     return await databaseController.getDataList();
+  }
+
+  Future<int> _deleteData({required Memo currentMemo}) async {
+    return await databaseController.delete(currentMemo.id!);
+  }
+
+  Future<int> _updateData({required Memo currentMemo}) async {
+    return await databaseController.updateData(currentMemo);
   }
 
   Future<int> _createData({required Memo newData}) async {

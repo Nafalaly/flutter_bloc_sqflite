@@ -18,12 +18,13 @@ class MemoDbController {
     Directory dir = await getApplicationDocumentsDirectory();
     String path = '${dir.path}my_database.db';
     var database = await openDatabase(path, version: 1, onCreate: _createdb);
+
     return database;
   }
 
   void _createdb(Database db, int newVersion) async {
     String buattabel =
-        'CREATE TABLE ${Memo.tableName}(${Memo.colId} INT AUTO INCREMENT,${Memo.colMemo} TEXT)';
+        'CREATE TABLE ${Memo.tableName}(${Memo.colId} INTEGER PRIMARY KEY AUTOINCREMENT,${Memo.colMemo} TEXT)';
     await db.execute(buattabel);
   }
 
@@ -35,6 +36,8 @@ class MemoDbController {
 
   //UPDATE
   Future<int> updateData(Memo newMemo) async {
+    print(
+        'Database trying to update with id ${newMemo.id}, with val ${newMemo.memo}');
     var db = await database;
     var result = await db.update(Memo.tableName, newMemo.toMap(),
         where: '${Memo.colId}=?', whereArgs: [newMemo.id]);

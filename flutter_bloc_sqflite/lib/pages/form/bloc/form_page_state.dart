@@ -12,7 +12,46 @@ abstract class FormPageState {
 class FormPageInitial extends FormPageState {}
 
 class FormPageEditMode extends FormPageState {
-  late Memo currentMemo;
+  late Memo currentMemo = Memo();
+  bool initialState = false;
+
+  FormPageEditMode.initial(
+      {required MemoDbBloc dbBloc, required this.currentMemo}) {
+    super.dbBloc;
+    super.memoInformation = currentMemo.memo;
+    initialState = true;
+    print('Current memo to update has id ${currentMemo.id}');
+  }
+
+  FormPageEditMode(
+      {String? memoInformation,
+      ActionFormState? actionFormState,
+      bool? initialState,
+      Memo? currentMemo}) {
+    if (memoInformation != null) {
+      super.memoInformation = memoInformation;
+    }
+    if (currentMemo != null) {
+      this.currentMemo = currentMemo;
+    }
+    if (actionFormState != null) {
+      super.actionFormState = actionFormState;
+    }
+    if (initialState != null) {
+      this.initialState = initialState;
+    }
+  }
+  FormPageEditMode copyWith({
+    String? memoInformation,
+    ActionFormState? actionFormState,
+    bool? initialState,
+  }) {
+    return FormPageEditMode(
+        memoInformation: memoInformation ?? this.memoInformation,
+        actionFormState: actionFormState ?? this.actionFormState,
+        initialState: initialState ?? this.initialState,
+        currentMemo: currentMemo);
+  }
 }
 
 class FormPageCreateMode extends FormPageState {

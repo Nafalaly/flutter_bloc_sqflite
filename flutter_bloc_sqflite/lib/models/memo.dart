@@ -8,11 +8,12 @@ class Memo {
   //col
   String? id;
   late String memo;
-
+  Memo();
   Memo.addnewData({required this.memo});
+  Memo.addnewDataWtId({required this.id, required this.memo});
 
   Memo.fromDatabase(Map<String, dynamic> db) {
-    id = db[colId];
+    id = db[colId].toString();
     memo = db[colMemo];
   }
 

@@ -32,8 +32,9 @@ class NavigatorTriggerStatusIdle extends NavigatorTriggerStatus {
 }
 
 class NavigatorTriggerStatusTriggered extends NavigatorTriggerStatus {
+  Memo? currentMemo;
   final String route;
-  NavigatorTriggerStatusTriggered({required this.route});
+  NavigatorTriggerStatusTriggered({required this.route, this.currentMemo});
 }
 
 abstract class DataState {
