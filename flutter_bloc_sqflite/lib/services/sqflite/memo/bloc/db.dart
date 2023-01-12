@@ -4,14 +4,29 @@ class MemoDbController {
   static MemoDbController? classdb;
   static Database? _database;
   MemoDbController.createinstance();
+
   factory MemoDbController() {
     classdb ??= MemoDbController.createinstance();
     return classdb!;
   }
 
   Future<Database> get database async {
-    _database ??= await initdb();
-    return _database!;
+    Database database;
+    Directory dir = await getApplicationDocumentsDirectory();
+    String path = '${dir.path}my_database.db';
+    if (Platform.isLinux) {
+      print('DATABASE INITIALIZATION RUNNING...');
+      print('DATABASE created at path :$inMemoryDatabasePath');
+      sqfliteFfiInit();
+      var databaseFactory = databaseFactoryFfi;
+      database = await databaseFactory.openDatabase(inMemoryDatabasePath,
+          options: OpenDatabaseOptions(onCreate: _createdb, version: 1));
+      return database;
+    } else {
+      //Other platforms run here
+      database = await openDatabase(path, version: 1, onCreate: _createdb);
+    }
+    return database;
   }
 
   Future<Database> initdb() async {

@@ -6,6 +6,8 @@ import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:sqflite/sqflite.dart';
+import 'dart:io' show Platform;
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 part 'memo_db_event.dart';
 part 'memo_db_state.dart';
